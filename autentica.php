@@ -11,10 +11,6 @@ if (empty($usuario) || empty($password)) {
 }
 
 try {
-    // IMPORTANTE: Ajusta los nombres de las columnas ('usuario' y 'contrasena') según tu base de datos en PostgreSQL
-    // En el ejemplo de la clase usabas 'user' y 'pass'. Si es así, usa la siguiente línea en su lugar:
-    // $query = "SELECT * FROM usuarios WHERE \"user\" = :usuario AND pass = :contrasena";
-    
     $query = "SELECT * FROM usuarios WHERE name = :usuario AND password = :contrasena";
     $stmt = $pdo->prepare($query);
     
@@ -25,19 +21,28 @@ try {
     $registro = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($registro) {
-        // Autenticación exitosa
+        session_regenerate_id(true); 
         $_SESSION['usuario'] = $usuario;
+        $_SESSION["ultimo_acceso"] = time(); 
+
+        if (isset($_POST["recordar"])){
+            $token = bin2hex(random_bytes(16));
+            $queryUpdate = "UPDATE usuarios SET token = :token WHERE name = :usuario";
+            $stmtUpdate = $pdo->prepare($queryUpdate);
+            $stmtUpdate->execute([':token' => $token, ':usuario' => $usuario]);
+
+            setcookie("token", $token, time() + (60*60*24*30), "/", "", false, true); 
+            setcookie("usuario", $usuario, time() + (60*60*24*30), "/", "", false, true);
+        }
         
-        // Redirigir a la página principal después de iniciar sesión
-        // Si no tienes bienvenida.php, cámbialo por el archivo que corresponda.
         header("Location: first.php"); 
         exit();
     } else {
-        // Autenticación fallida
         header("Location: index.php?error=1");
         exit();
     }
 } catch (PDOException $e) {
-    echo "Error en la consulta: " . $e->getMessage();
+    header("Location: index.php?error=4");
+    exit();
 }
 ?>
