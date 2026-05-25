@@ -60,6 +60,11 @@ if (!isset($_SESSION['usuario'])) {
         .card-bajas:hover { border-color: #ef4444; }
         .card-descargas:hover { border-color: #8b5cf6; }
         .card-procesamiento:hover { border-color: #ec4899; }
+        .dashboard-grid a:last-child {
+            grid-column: 1 / -1;
+            justify-self: center;
+            width: 300px;
+        }
     </style>
 </head>
 <body>
@@ -112,6 +117,12 @@ if (!isset($_SESSION['usuario'])) {
                 <div class="menu-icon">⚡</div>
                 <h3 class="menu-title">Procesamiento</h3>
                 <p class="menu-desc">Analiza ingredientes usando nuestra función serverless avanzada.</p>
+            </a>
+
+            <a href="descargas_ensayos.php" class="menu-card card-descargas">
+                <div class="menu-icon">🎓</div>
+                <h3 class="menu-title">Ensayos</h3>
+                <p class="menu-desc">Descarga los ensayos de todo el semestre.</p>
             </a>
         </div>
     </div>
